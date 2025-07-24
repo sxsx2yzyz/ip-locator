@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单工具提示测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .ip-text {
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">
+        状态: 等待测试
+    </div>
+
+    <h1>IP地址工具提示测试</h1>
+    
+    <div class="test-section">
+        <h3>基本测试</h3>
+        <p>这是一个普通的IP地址: <span class="ip-text">192.168.1.1</span></p>
+        <p>另一个IP地址: <span class="ip-text">8.8.8.8</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>边缘测试</h3>
+        <p>左边缘: <span class="ip-text">10.0.0.1</span></p>
+        <p style="text-align: right;">右边缘: <span class="ip-text">172.16.0.1</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>混合文本测试</h3>
+        <p>服务器IP是 <span class="ip-text">203.0.113.1</span> 和 <span class="ip-text">198.51.100.1</span></p>
+    </div>
+
+    <script>
+        // 检查是否有重复的工具提示
+        function checkTooltips() {
+            const tooltips = document.querySelectorAll('.ip-locator-tooltip');
+            const status = document.getElementById('status');
+            
+            if (tooltips.length === 0) {
+                status.textContent = '状态: 未检测到工具提示';
+                status.style.background = '#f44336';
+            } else if (tooltips.length === 1) {
+                status.textContent = '状态: 正常 (1个工具提示)';
+                status.style.background = '#4CAF50';
+            } else {
+                status.textContent = `状态: 警告 (${tooltips.length}个工具提示)`;
+                status.style.background = '#ff9800';
+            }
+        }
+
+        // 定期检查
+        setInterval(checkTooltips, 1000);
+        checkTooltips();
+
+        // 页面加载完成后检查
+        window.addEventListener('load', checkTooltips);
+    </script>
+</body>
+</html> 

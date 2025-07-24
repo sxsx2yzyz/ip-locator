@@ -1,0 +1,33 @@
+{
+  "name": "ip-locator",
+  "version": "1.0.0",
+  "description": "Chrome插件 - 自动检测网页IP地址并显示地理位置信息",
+  "main": "content.js",
+  "scripts": {
+    "build": "node generate_icons.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "ip-location",
+    "geolocation",
+    "ip-detection",
+    "browser-extension"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ip-locator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/ip-locator/issues"
+  },
+  "homepage": "https://github.com/your-username/ip-locator#readme",
+  "devDependencies": {
+    "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 

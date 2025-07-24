@@ -1,0 +1,117 @@
+/* IP Locator 样式 */
+.ip-locator-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin: 0 2px;
+  font-size: 0.9em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: relative;
+  will-change: transform;
+}
+
+.ip-locator-wrapper:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ip-address {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ip-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+  opacity: 0.9;
+}
+
+.loading {
+  color: #ffd700;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+.error {
+  color: #ff6b6b;
+  font-style: italic;
+}
+
+.flag {
+  font-size: 1.1em;
+  margin-right: 4px;
+}
+
+.location-text {
+  font-weight: 500;
+}
+
+.isp {
+  font-size: 0.8em;
+  opacity: 0.8;
+  font-style: italic;
+  margin-left: 4px;
+}
+
+/* 加载动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ip-locator-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 6px 10px;
+  }
+  
+  .ip-location {
+    flex-wrap: wrap;
+  }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .ip-locator-wrapper {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    border: 1px solid #4a5568;
+  }
+  
+  .ip-address {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+  .ip-locator-wrapper {
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+  }
+  
+  .ip-address {
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+  }
+} 

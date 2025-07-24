@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本选中测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .ip-text {
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            user-select: text;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">
+        状态: 等待选中测试
+    </div>
+
+    <div class="instructions">
+        <h3>📝 文本选中测试说明</h3>
+        <p><strong>使用方法：</strong></p>
+        <ol>
+            <li>选中下面任意一个IP地址</li>
+            <li>观察是否立即出现详细信息弹窗</li>
+            <li>点击弹窗中的"📋 复制"按钮测试复制功能</li>
+        </ol>
+        <p><strong>测试要点：</strong></p>
+        <ul>
+            <li>选中后是否立即显示弹窗</li>
+            <li>弹窗位置是否正确（不被遮挡）</li>
+            <li>复制功能是否正常工作</li>
+        </ul>
+    </div>
+
+    <h1>IP地址文本选中测试</h1>
+    
+    <div class="test-section">
+        <h3>基本测试</h3>
+        <p>这是一个普通的IP地址: <span class="ip-text">192.168.1.1</span></p>
+        <p>另一个IP地址: <span class="ip-text">8.8.8.8</span></p>
+        <p>第三个IP地址: <span class="ip-text">1.1.1.1</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>混合文本测试</h3>
+        <p>服务器IP是 <span class="ip-text">203.0.113.1</span> 和 <span class="ip-text">198.51.100.1</span></p>
+        <p>网关地址: <span class="ip-text">10.0.0.1</span>，DNS服务器: <span class="ip-text">172.16.0.1</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>长文本测试</h3>
+        <p>这是一段很长的文本，包含一个IP地址 <span class="ip-text">127.0.0.1</span> 和其他内容。请尝试选中这个IP地址，看看弹窗是否能正确显示。</p>
+    </div>
+
+    <div class="test-section">
+        <h3>边缘位置测试</h3>
+        <p style="text-align: left;">左边缘IP: <span class="ip-text">192.0.2.1</span></p>
+        <p style="text-align: right;">右边缘IP: <span class="ip-text">224.0.0.1</span></p>
+        <p style="text-align: center;">中心IP: <span class="ip-text">169.254.1.1</span></p>
+    </div>
+
+    <script>
+        // 检查扩展是否正常工作
+        function checkExtension() {
+            const status = document.getElementById('status');
+            
+            // 检查是否有工具提示元素
+            const tooltips = document.querySelectorAll('.ip-locator-tooltip');
+            
+            if (tooltips.length === 0) {
+                status.textContent = '状态: 未检测到扩展工具提示';
+                status.style.background = '#f44336';
+            } else if (tooltips.length === 1) {
+                status.textContent = '状态: 扩展正常 (1个工具提示)';
+                status.style.background = '#4CAF50';
+            } else {
+                status.textContent = `状态: 警告 (${tooltips.length}个工具提示)`;
+                status.style.background = '#ff9800';
+            }
+        }
+
+        // 监听选中事件
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText) {
+                console.log('页面检测到选中:', selectedText);
+            }
+        });
+
+        // 定期检查
+        setInterval(checkExtension, 1000);
+        checkExtension();
+
+        // 页面加载完成后检查
+        window.addEventListener('load', checkExtension);
+    </script>
+</body>
+</html> 

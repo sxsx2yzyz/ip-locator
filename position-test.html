@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具提示定位测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .test-area {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            border: 2px solid #333;
+            background: white;
+        }
+        .corner {
+            position: absolute;
+            padding: 10px;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .top-left {
+            top: 10px;
+            left: 10px;
+        }
+        .top-right {
+            top: 10px;
+            right: 10px;
+        }
+        .bottom-left {
+            bottom: 10px;
+            left: 10px;
+        }
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+        }
+        .center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .edge-left {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+        }
+        .edge-right {
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+        .edge-top {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .edge-bottom {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .instructions {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 12px;
+            text-align: center;
+        }
+        .control-btn {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .control-btn.disabled {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        悬停测试：将鼠标悬停在不同位置的IP地址上，观察工具提示的定位效果
+        <br>
+        <button id="toggleExtension" class="control-btn">
+            禁用扩展工具提示
+        </button>
+    </div>
+    
+    <div class="test-area">
+        <!-- 四个角落 -->
+        <div class="corner top-left">
+            左上角IP: 192.168.1.1
+        </div>
+        <div class="corner top-right">
+            右上角IP: 10.0.0.1
+        </div>
+        <div class="corner bottom-left">
+            左下角IP: 172.16.0.1
+        </div>
+        <div class="corner bottom-right">
+            右下角IP: 8.8.8.8
+        </div>
+        
+        <!-- 中心 -->
+        <div class="corner center">
+            中心IP: 1.1.1.1
+        </div>
+        
+        <!-- 边缘 -->
+        <div class="corner edge-left">
+            左边缘IP: 203.0.113.1
+        </div>
+        <div class="corner edge-right">
+            右边缘IP: 198.51.100.1
+        </div>
+        <div class="corner edge-top">
+            上边缘IP: 127.0.0.1
+        </div>
+        <div class="corner edge-bottom">
+            下边缘IP: 224.0.0.1
+        </div>
+        
+        <!-- 随机位置 -->
+        <div class="corner" style="top: 25%; left: 25%;">
+            随机位置1: 169.254.1.1
+        </div>
+        <div class="corner" style="top: 75%; left: 75%;">
+            随机位置2: 240.0.0.1
+        </div>
+        <div class="corner" style="top: 25%; left: 75%;">
+            随机位置3: 192.0.2.1
+        </div>
+        <div class="corner" style="top: 75%; left: 25%;">
+            随机位置4: 198.18.0.1
+        </div>
+    </div>
+
+    <script>
+        // 工具提示控制
+        let useExtension = true;
+        let tooltip = null;
+        let currentIP = null;
+        
+        // 切换扩展使用
+        document.getElementById('toggleExtension').addEventListener('click', function() {
+            useExtension = !useExtension;
+            this.textContent = useExtension ? '禁用扩展工具提示' : '启用扩展工具提示';
+            this.classList.toggle('disabled', !useExtension);
+            
+            if (!useExtension) {
+                // 移除扩展的工具提示
+                const extensionTooltips = document.querySelectorAll('.ip-locator-tooltip');
+                extensionTooltips.forEach(tooltip => tooltip.remove());
+                console.log('已移除扩展工具提示，使用页面内工具提示');
+            } else {
+                console.log('已启用扩展工具提示');
+            }
+        });
+
+        function createTooltip() {
+            tooltip = document.createElement('div');
+            tooltip.style.cssText = `
+                position: fixed;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                z-index: 10000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                max-width: 300px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            `;
+            document.body.appendChild(tooltip);
+        }
+
+        function updateTooltipPosition(mouseX, mouseY) {
+            if (!tooltip) return;
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // 保守的估算尺寸
+            const tooltipWidth = 320;
+            const tooltipHeight = 100;
+            const margin = 20;
+            
+            let left, top;
+            
+            // 水平定位
+            if (mouseX + tooltipWidth + margin < viewportWidth) {
+                left = mouseX + margin;
+            } else if (mouseX - tooltipWidth - margin > 0) {
+                left = mouseX - tooltipWidth - margin;
+            } else {
+                left = Math.max(margin, (viewportWidth - tooltipWidth) / 2);
+            }
+            
+            // 垂直定位
+            if (mouseY - tooltipHeight - margin > 0) {
+                top = mouseY - tooltipHeight - margin;
+            } else if (mouseY + tooltipHeight + margin < viewportHeight) {
+                top = mouseY + margin;
+            } else {
+                top = Math.max(margin, (viewportHeight - tooltipHeight) / 2);
+            }
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            
+            console.log(`页面内工具提示位置: (${left}, ${top}), 鼠标位置: (${mouseX}, ${mouseY})`);
+        }
+
+        function showTooltip(ip, x, y) {
+            if (!tooltip) createTooltip();
+            
+            updateTooltipPosition(x, y);
+            tooltip.style.opacity = '1';
+            tooltip.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: bold; font-family: monospace;">${ip}</span>
+                        <span style="font-size: 14px;">🇺🇸</span>
+                    </div>
+                    <div style="font-size: 11px; opacity: 0.9;">Mountain View, California, United States</div>
+                    <div style="font-size: 10px; opacity: 0.8; font-style: italic;">Google LLC</div>
+                </div>
+            `;
+        }
+
+        function hideTooltip() {
+            if (tooltip) {
+                tooltip.style.opacity = '0';
+            }
+        }
+
+        // 事件监听（仅在禁用扩展时生效）
+        document.addEventListener('mouseover', (e) => {
+            if (useExtension) return; // 如果使用扩展，不处理页面内事件
+            
+            const text = e.target.textContent || '';
+            const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g;
+            const matches = text.match(ipRegex);
+
+            if (matches && matches.length > 0) {
+                const ip = matches[0];
+                if (ip !== currentIP) {
+                    currentIP = ip;
+                    showTooltip(ip, e.clientX, e.clientY);
+                }
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (useExtension) return;
+            hideTooltip();
+            currentIP = null;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (useExtension) return;
+            if (tooltip && currentIP) {
+                updateTooltipPosition(e.clientX, e.clientY);
+            }
+        });
+
+        // 初始化
+        createTooltip();
+        console.log('页面内工具提示已初始化，默认使用扩展工具提示');
+    </script>
+</body>
+</html> 
